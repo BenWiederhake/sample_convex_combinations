@@ -16,14 +16,12 @@ combination"-space).
 import random
 
 
-def sample(d, span_origin=False, rng=random.random):
+def sample(d, span_origin=False, rng=random.random, verbose=False):
     remaining_volume = 1.0
     result = list()
-    for i in range(d + span_origin - 1):
+    for i in range(d + span_origin - 1, 1 - 1, -1):
         quantile = rng()
-        # d=2, span_origin=True  → `** (1 / 2)`
-        # d=2, span_origin=False → `** (1 / 1)`
-        x = (1 - quantile ** (1 / (d + span_origin))) * remaining_volume
+        x = (1 - quantile ** (1 / i)) * remaining_volume
         remaining_volume -= x
         result.append(x)
     if not span_origin:
