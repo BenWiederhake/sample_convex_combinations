@@ -7,7 +7,7 @@ import sample_convex_combinations
 import unittest
 
 
-GATHER_FALSE_POSITIVE = 1e-10
+GATHER_EPSILON = 1e-10
 
 
 def gather(d, span_origin, asserter):
@@ -19,7 +19,7 @@ def gather(d, span_origin, asserter):
     if span_origin:
         # The following will fail 0.0002% of the time for no reason.
         # TODO: Find a better way to deal with it.
-        asserter.assertTrue(GATHER_FALSE_POSITIVE <= sum(actual) <= 1 - GATHER_FALSE_POSITIVE, actual)
+        asserter.assertTrue(GATHER_EPSILON <= sum(actual) <= 1 - GATHER_EPSILON, actual)
     else:
         asserter.assertAlmostEqual(1.0, sum(actual), actual)
 
@@ -55,12 +55,18 @@ def write_samples(d, span_origin, n, filename):
 
 
 class TestStatistics(unittest.TestCase):
-    def test_dimensions(self):
+    QUANTITY = 50000
+    DATA = dict()
+
+    @classmethod
+    def setUpClass(cls):
+        utc = unittest.TestCase()
         for d in [1, 2, 3, 5, 10]:
             for span_origin in [True, False]:
-                with self.subTest(d=d, span_origin=span_origin):
+                with utc.subTest(d=d, span_origin=span_origin):
                     self.run_test(d, span_origin)
+                    TestStatistics[(d, span_origin)] = \
+                        gather_many(d, span_origin, self, TestStatistics.QUANTITY)
 
-    def run_test(self, d, span_origin):
-        gather(d, span_origin, self)
-
+    def test_dimensions(self):
+        pass
